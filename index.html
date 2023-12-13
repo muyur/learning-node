@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <style></style>
+</head>
+
+<body>
+  <label>账号：<input type="text" id="account" /></label>
+  <label>密码：<input type="password" id="pass" /></label>
+  <label>文件上传：<input type="file" id="file" /></label>
+  <button class="login">登录</button>
+  <button class="user">用户</button>
+  <button class="get-detail">获取文章详情</button>
+  <script>
+    function http(method, url, params = "") {
+      const xhr = new XMLHttpRequest();
+      // readyState每次值的变化都会触发 readstatechange
+      xhr.onreadystatechange = () => {
+        /**
+         * readyState 代表当前请求/响应过程的哪一个状态
+         * 0：未初始化
+         * 1：已打开
+         * 2：已发送
+         * 3：接受中
+         * 4：完成
+         */
+        if (xhr.readyState === 4) {
+          if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
+            console.log(xhr.responseText);
+          } else {
+            console.error("Request was unsuccessful:" + xhr.status);
+          }
+        }
+      };
+      xhr.open(method, url, true); // 第三个参数是否开启异步, 默认false 同步 | true 异步
+      // // post 请求的参数需要放在 xhr.send 里
+      xhr.send(params);
+    }
+
+    const user = document.querySelector(".user");
+    user.addEventListener("click", () => {
+      http("get", "http://localhost:3000/user?id=1&type=user");
+    });
+
+    const login = document.querySelector(".login");
+    login.addEventListener("click", () => {
+      const account = document.querySelector("#account").value;
+      const pass = document.querySelector("#pass").value;
+      console.log(account, pass);
+      http(
+        "post",
+        "http://localhost:3000/login",
+        `account=${account}&pass=${pass}`
+      );
+    })
+
+      const getDetail = document.querySelector(".get-detail");
+      getDetail.addEventListener("click", () => {
+        // http("get", "http://localhost:3000/detail?id=1");
+        http("get", "http://localhost:3000/detail");
+      });
+
+      const iptDom = document.querySelector("#file");
+      iptDom.addEventListener("change", (e) => {
+        // change事件中执行异步请求可能会导致页面刷新
+        // 需要阻止默认行为来防止页面刷新
+        e.preventDefault();
+        console.log(e.target.files);
+        for (let i = 0; i < e.target.files.length; i++) {
+          const file = e.target.files[i];
+          const formData = new FormData();
+          formData.append("file", file);
+          http("post", "http://localhost:3000/upload", formData);
+          window.onbeforeunload = () => {
+            event.returnValue = false
+          }
+          setTimeout(() => {
+            window.onbeforeunload = null
+          }, 500)
+        }
+        
+        // const file = iptDom.files[0];
+        // const formData = new FormData();
+        // formData.append("file", file);
+        // http("post", "http://localhost:3000/upload", formData);
+      });
+  </script>
+</body>
+
+</html>

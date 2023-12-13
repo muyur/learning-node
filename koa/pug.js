@@ -1,0 +1,23 @@
+// 使用 pug 模板
+const Koa = require("koa");
+const path = require("path");
+const views = require("koa-views");
+
+const app = new Koa();
+
+app.use(
+  views(path.join(__dirname, "views"), {
+    extension: "pug",
+  })
+);
+
+let title = "pug";
+let content = "pug模板";
+
+app.use(async (ctx) => {
+  await ctx.render("index", { title, content });
+});
+
+app.listen(3000, () => {
+  console.log("app started at port 3000");
+})
