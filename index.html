@@ -66,21 +66,12 @@
 
       const iptDom = document.querySelector("#file");
       iptDom.addEventListener("change", (e) => {
-        // change事件中执行异步请求可能会导致页面刷新
-        // 需要阻止默认行为来防止页面刷新
-        e.preventDefault();
         console.log(e.target.files);
         for (let i = 0; i < e.target.files.length; i++) {
           const file = e.target.files[i];
           const formData = new FormData();
           formData.append("file", file);
           http("post", "http://localhost:3000/upload", formData);
-          window.onbeforeunload = () => {
-            event.returnValue = false
-          }
-          setTimeout(() => {
-            window.onbeforeunload = null
-          }, 500)
         }
         
         // const file = iptDom.files[0];

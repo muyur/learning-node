@@ -8,7 +8,7 @@ const multer = require('koa-multer')
 const app = new Koa()
 
 app.use(cors())
-parameter(app)
+// parameter(app)
 // 存储文件
 const storage = multer.diskStorage({
     // 存储文件的位置
